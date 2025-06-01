@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ihre globalen Basis-Stile */
+body {
+  font-family: "Amazon Ember", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Die Hintergrundfarbe wird über Tailwind-Klasse in index.html gesetzt oder hier */
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #232F3E; /* Amazon dark bg */
+}
+::-webkit-scrollbar-thumb {
+  background: #4A596D; /* Lighter Amazon grey */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF9900; /* Amazon orange */
+}

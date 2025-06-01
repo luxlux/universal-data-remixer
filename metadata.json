@@ -1,0 +1,6 @@
+
+{
+  "name": "Universal Data Remixer",
+  "description": "Eine Webanwendung zum Hochladen von Textdateien (TSV, CSV etc.), Durchsuchen von Datensätzen, Auswählen bestimmter Datensätze und Herunterladen als konfigurierbare CSV-Datei.",
+  "requestFramePermissions": []
+}

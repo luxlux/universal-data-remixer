@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true, // Vite kümmert sich um das Emit
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "types": ["vite/client", "node"] // vite/client und node hinzugefügt
+  },
+  "include": ["**/*.ts", "**/*.tsx", "vite.config.ts", "tailwind.config.js", "postcss.config.js"], // Sicherstellen, dass Konfig-Dateien auch erfasst werden
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
