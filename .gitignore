@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Spezifische Dateien zum Ignorieren
+README-privat.md  # << HIER IHRE PRIVATE README HINZUFÜGEN
