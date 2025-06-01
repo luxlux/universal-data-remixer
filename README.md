@@ -120,16 +120,18 @@ Nachdem Sie mit `npm run build` den `dist`-Ordner erstellt haben:
 5.  **Apache Virtual Host Konfiguration:**
     Bearbeiten oder erstellen Sie die Apache-Konfigurationsdatei für Ihre Domain (z.B. `/etc/apache2/sites-available/udr.nofm.de.conf` oder `/etc/apache2/sites-available/udr.nofm.de-le-ssl.conf` für HTTPS).
 
-    Ein Beispiel für eine SSL-Konfiguration (Port 443):
+    Beispiel Apache Virtual Host Konfiguration (passen Sie Pfade und ServerName an):
     ```apache
+    # Für HTTPS (Port 443):
+    # sudo a2enmod ssl rewrite headers (falls noch nicht geschehen)
     <IfModule mod_ssl.c>
         <VirtualHost *:443>
-            ServerName udr.nofm.de # Ihre Domain
-            DocumentRoot /var/www/udr.nofm.de/html/ # Pfad zum Inhalt Ihres dist-Ordners
+            ServerName yourdomain.com # Ersetzen Sie dies
+            DocumentRoot /var/www/yourdomain.com/html/ # Pfad zum Inhalt Ihres dist-Ordners
 
-            <Directory "/var/www/udr.nofm.de/html/">
-                Options Indexes FollowSymLinks # FollowSymLinks ist nicht nötig, wenn keine Symlinks verwendet werden
-                AllowOverride None # Empfohlen, wenn keine .htaccess benötigt wird
+            <Directory "/var/www/yourdomain.com/html/">
+                Options Indexes FollowSymLinks # FollowSymLinks ist i.d.R. nicht nötig, wenn direkt kopiert wird
+                AllowOverride None             # Empfohlen, wenn keine .htaccess benötigt wird
                 Require all granted
             </Directory>
 
@@ -140,42 +142,45 @@ Nachdem Sie mit `npm run build` den `dist`-Ordner erstellt haben:
             RewriteCond %{REQUEST_FILENAME} -d
             RewriteRule ^ - [L]
 
-            # Alle anderen Anfragen auf index.html umleiten (damit React-Router etc. funktioniert)
+            # Alle anderen Anfragen auf index.html umleiten
             RewriteRule ^ /index.html [L]
 
-            ErrorLog ${APACHE_LOG_DIR}/udr.nofm.de_error.log
-            CustomLog ${APACHE_LOG_DIR}/udr.nofm.de_access.log combined
+            ErrorLog ${APACHE_LOG_DIR}/yourdomain_error.log
+            CustomLog ${APACHE_LOG_DIR}/yourdomain_access.log combined
 
-            # Ihre SSL-Zertifikatseinstellungen (z.B. von Let's Encrypt)
+            # SSL-Zertifikatseinstellungen (z.B. von Let's Encrypt)
             SSLEngine on
-            SSLCertificateFile /etc/letsencrypt/live/udr.nofm.de/fullchain.pem
-            SSLCertificateKeyFile /etc/letsencrypt/live/udr.nofm.de/privkey.pem
+            SSLCertificateFile /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+            SSLCertificateKeyFile /etc/letsencrypt/live/yourdomain.com/privkey.pem
             Include /etc/letsencrypt/options-ssl-apache.conf
         </VirtualHost>
     </IfModule>
+
+    # Für HTTP (Port 80), leitet optional auf HTTPS um oder als Fallback:
+    <VirtualHost *:80>
+        ServerName yourdomain.com
+
+        # Option 1: Auf HTTPS umleiten (empfohlen)
+        # RewriteEngine On
+        # RewriteCond %{HTTPS} off
+        # RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]
+
+        # Option 2: Nur HTTP bedienen (falls kein SSL gewünscht/verfügbar)
+        DocumentRoot /var/www/yourdomain.com/html/
+        <Directory "/var/www/yourdomain.com/html/">
+            Options Indexes FollowSymLinks
+            AllowOverride None
+            Require all granted
+        </Directory>
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} -f [OR]
+        RewriteCond %{REQUEST_FILENAME} -d
+        RewriteRule ^ - [L]
+        RewriteRule ^ /index.html [L]
+        ErrorLog ${APACHE_LOG_DIR}/yourdomain_error.log
+        CustomLog ${APACHE_LOG_DIR}/yourdomain_access.log combined
+    </VirtualHost>
     ```
-    *   Wenn Sie noch kein SSL haben und auf Port 80 testen:
-        ```apache
-        <VirtualHost *:80>
-            ServerName udr.nofm.de
-            DocumentRoot /var/www/udr.nofm.de/html/
-
-            <Directory "/var/www/udr.nofm.de/html/">
-                Options Indexes FollowSymLinks
-                AllowOverride None
-                Require all granted
-            </Directory>
-
-            RewriteEngine On
-            RewriteCond %{REQUEST_FILENAME} -f [OR]
-            RewriteCond %{REQUEST_FILENAME} -d
-            RewriteRule ^ - [L]
-            RewriteRule ^ /index.html [L]
-
-            ErrorLog ${APACHE_LOG_DIR}/udr.nofm.de_error.log
-            CustomLog ${APACHE_LOG_DIR}/udr.nofm.de_access.log combined
-        </VirtualHost>
-        ```
 
 6.  **Seite aktivieren und Apache neu laden (falls Konfiguration geändert):**
     ```bash
